@@ -1658,6 +1658,7 @@ rl_display_match_list (matches, len, max)
     rl_outstream = fdopen (fd[1], "a");
 
     pid = _rl_external_pager_init(fd);
+		#define rl_crlf() if (!EXTERNAL_PAGER) rl_crlf; else putc ('\n', rl_outstream);
   } 
   lines = 0;
   if (_rl_print_completions_horizontally == 0)
@@ -1740,6 +1741,7 @@ rl_display_match_list (matches, len, max)
     if (EXTERNAL_PAGER)
     {
     printf("external pager deinit");
+			#undef rl_crlf
 			fclose(rl_outstream);
 			rl_outstream = old_rl_outstream;
 			waitpid(pid, 0, 0);
