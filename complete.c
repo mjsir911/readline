@@ -583,11 +583,10 @@ _rl_external_pager_init (fd)
   {
     close(fd[1]);
     dup2(fd[0], STDIN_FILENO);
-    char *const less_args[] = {"less", "--QUIT-AT-EOF",
-                                   "--quit-if-one-screen",
-                                   "--no-init",
-                                   NULL};
-    exit(execvp("less", less_args));
+		char *pager = getenv ("PAGER");
+		if (pager == NULL || (*pager == '\0'))
+			pager = "more";
+    exit(execlp(pager, pager, NULL));
   }
   else
   {
