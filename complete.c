@@ -1737,7 +1737,6 @@ rl_display_match_list (matches, len, max)
 	}
       rl_crlf ();
     }
-    //if (old_rl_outstream != NULL && rl_outstream != old_rl_outstream)
     if (EXTERNAL_PAGER)
     {
     printf("external pager deinit");
