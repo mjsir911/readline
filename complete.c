@@ -574,6 +574,28 @@ _rl_internal_pager (lines)
     return 0;
 }
 
+static pid_t
+_rl_external_pager_init (fd)
+  int fd[2];
+{
+  pid_t pid;
+  if ((pid = fork()) == 0) // child
+  {
+    close(fd[1]);
+    dup2(fd[0], STDIN_FILENO);
+    char *const less_args[] = {"less", "--QUIT-AT-EOF",
+                                   "--quit-if-one-screen",
+                                   "--no-init",
+                                   NULL};
+    exit(execvp("less", less_args));
+  }
+  else
+  {
+    close(fd[0]);
+  }
+  return pid;
+}
+
 static int
 path_isdir (filename)
      const char *filename;
@@ -1625,6 +1647,18 @@ rl_display_match_list (matches, len, max)
 
   rl_crlf ();
 
+  FILE *old_rl_outstream;
+  pid_t pid;
+  if (_rl_page_completions == 2)
+  {
+    printf("external pager init");
+    int fd[2];
+    pipe(fd);
+    old_rl_outstream = rl_outstream;
+    rl_outstream = fdopen (fd[1], "a");
+
+    pid = _rl_external_pager_init(fd);
+  } 
   lines = 0;
   if (_rl_print_completions_horizontally == 0)
     {
@@ -1659,7 +1693,7 @@ rl_display_match_list (matches, len, max)
 #endif
 	    return;
 	  lines++;
-	  if (_rl_page_completions && lines >= (_rl_screenheight - 1) && i < count)
+	  if (_rl_page_completions == 1 && lines >= (_rl_screenheight - 1) && i < count)
 	    {
 	      lines = _rl_internal_pager (lines);
 	      if (lines < 0)
@@ -1687,7 +1721,7 @@ rl_display_match_list (matches, len, max)
 		{
 		  rl_crlf ();
 		  lines++;
-		  if (_rl_page_completions && lines >= _rl_screenheight - 1)
+		  if (_rl_page_completions == 1 && lines >= _rl_screenheight - 1)
 		    {
 		      lines = _rl_internal_pager (lines);
 		      if (lines < 0)
@@ -1703,6 +1737,15 @@ rl_display_match_list (matches, len, max)
 	}
       rl_crlf ();
     }
+    //if (old_rl_outstream != NULL && rl_outstream != old_rl_outstream)
+    if (_rl_page_completions == 2)
+    {
+    printf("external pager deinit");
+    fclose(rl_outstream);
+    rl_outstream = old_rl_outstream;
+    waitpid(pid, 0, 0);
+    }
+
 }
 
 /* Display MATCHES, a list of matching filenames in argv format.  This
