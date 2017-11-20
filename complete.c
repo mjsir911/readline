@@ -1651,7 +1651,6 @@ rl_display_match_list (matches, len, max)
 	bool EXTERNAL_PAGER=(_rl_page_completions == 2);
   if (EXTERNAL_PAGER)
   {
-    printf("external pager init");
     int fd[2];
     pipe(fd);
     old_rl_outstream = rl_outstream;
@@ -1740,7 +1739,6 @@ rl_display_match_list (matches, len, max)
     }
     if (EXTERNAL_PAGER)
     {
-    printf("external pager deinit");
 			#undef rl_crlf
 			fclose(rl_outstream);
 			rl_outstream = old_rl_outstream;
