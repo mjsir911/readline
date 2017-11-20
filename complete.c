@@ -578,6 +578,7 @@ static pid_t
 _rl_external_pager_init (fd)
   int fd[2];
 {
+	signal(SIGPIPE, SIG_IGN);
   pid_t pid;
   if ((pid = fork()) == 0) // child
   {
