@@ -1740,9 +1740,9 @@ rl_display_match_list (matches, len, max)
     if (EXTERNAL_PAGER)
     {
     printf("external pager deinit");
-    fclose(rl_outstream);
-    rl_outstream = old_rl_outstream;
-    waitpid(pid, 0, 0);
+			fclose(rl_outstream);
+			rl_outstream = old_rl_outstream;
+			waitpid(pid, 0, 0);
     }
 
 }
