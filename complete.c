@@ -1648,7 +1648,8 @@ rl_display_match_list (matches, len, max)
 
   FILE *old_rl_outstream;
   pid_t pid;
-  if (_rl_page_completions == 2)
+	bool EXTERNAL_PAGER=(_rl_page_completions == 2);
+  if (EXTERNAL_PAGER)
   {
     printf("external pager init");
     int fd[2];
@@ -1737,7 +1738,7 @@ rl_display_match_list (matches, len, max)
       rl_crlf ();
     }
     //if (old_rl_outstream != NULL && rl_outstream != old_rl_outstream)
-    if (_rl_page_completions == 2)
+    if (EXTERNAL_PAGER)
     {
     printf("external pager deinit");
     fclose(rl_outstream);
