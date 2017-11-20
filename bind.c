@@ -1568,7 +1568,6 @@ static const struct {
   { "menu-complete-display-prefix", &_rl_menu_complete_prefix_first, 0 },
   { "meta-flag",		&_rl_meta_flag,			0 },
   { "output-meta",		&_rl_output_meta_chars,		0 },
-  { "page-completions",		&_rl_page_completions,		0 },
   { "prefer-visible-bell",	&_rl_prefer_visible_bell,	V_SPECIAL },
   { "print-completions-horizontally", &_rl_print_completions_horizontally, 0 },
   { "revert-all-at-newline",	&_rl_revert_all_at_newline,	0 },
@@ -1643,6 +1642,7 @@ static int sv_histsize PARAMS((const char *));
 static int sv_isrchterm PARAMS((const char *));
 static int sv_keymap PARAMS((const char *));
 static int sv_seqtimeout PARAMS((const char *));
+static int sv_pcompletions PARAMS((const char *));
 static int sv_viins_modestr PARAMS((const char *));
 static int sv_vicmd_modestr PARAMS((const char *));
 
@@ -1662,6 +1662,7 @@ static const struct {
   { "isearch-terminators", V_STRING,	sv_isrchterm },
   { "keymap",		V_STRING,	sv_keymap },
   { "keyseq-timeout",	V_INT,		sv_seqtimeout },
+  { "page-completions",	V_INT,		sv_pcompletions}, /*_rl_page_completions*/
   { "vi-cmd-mode-string", V_STRING,	sv_vicmd_modestr }, 
   { "vi-ins-mode-string", V_STRING,	sv_viins_modestr }, 
   { (char *)NULL,	0, (_rl_sv_func_t *)0 }
@@ -1854,6 +1855,19 @@ sv_keymap (value)
       return 0;
     }
   return 1;
+}
+
+static int
+sv_pcompletions (value) /*_rl_page_completions*/
+     const char *value;
+{
+  if (value  == 0 || *value == '\0')
+    _rl_page_completions = 1;
+  else if (_rl_stricmp (value, "extended") == 0)
+    _rl_page_completions = 2;
+  else
+    _rl_page_completions = bool_to_int(value);
+  return 0;
 }
 
 static int
