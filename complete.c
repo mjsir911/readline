@@ -1648,7 +1648,7 @@ rl_display_match_list (matches, len, max)
 
   FILE *old_rl_outstream;
   pid_t pid;
-	bool EXTERNAL_PAGER=(_rl_page_completions == 2);
+	#define EXTERNAL_PAGER (_rl_page_completions == 2)
   if (EXTERNAL_PAGER)
   {
     int fd[2];
