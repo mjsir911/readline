@@ -574,36 +574,6 @@ _rl_internal_pager (lines)
     return 0;
 }
 
-static pid_t
-_rl_external_pager_init (fd)
-  int fd[2];
-{
-	signal(SIGPIPE, SIG_IGN);
-  pid_t pid;
-  if ((pid = fork()) == 0) // child
-  {
-    close(fd[1]);
-    dup2(fd[0], STDIN_FILENO);
-		#ifndef USE_LESS
-		char *pager = getenv ("PAGER");
-		if (pager == NULL || (*pager == '\0'))
-			pager = "more";
-		char *pargs[] = {pager};
-		#else
-		char *pargs[] = {"less", "--QUIT-AT-EOF", // -F
-                             "--quit-if-one-screen", // -E
-                             "--no-init", // -X
-                              NULL};
-		#endif
-    exit(execvp("less", pargs));
-  }
-  else
-  {
-    close(fd[0]);
-  }
-  return pid;
-}
-
 static int
 path_isdir (filename)
      const char *filename;
@@ -1656,16 +1626,16 @@ rl_display_match_list (matches, len, max)
   rl_crlf ();
 
   FILE *old_rl_outstream;
-  pid_t pid;
 	#define EXTERNAL_PAGER (_rl_page_completions == 2)
   if (EXTERNAL_PAGER)
   {
-    int fd[2];
-    pipe(fd);
+		signal(SIGPIPE, SIG_IGN);
+		char *pager = getenv ("PAGER");
+		if (pager == NULL || (*pager == '\0'))
+			pager = "more";
     old_rl_outstream = rl_outstream;
-    rl_outstream = fdopen (fd[1], "a");
+    rl_outstream = popen(pager, "w");
 
-    pid = _rl_external_pager_init(fd);
 		#define rl_crlf() if (!EXTERNAL_PAGER) rl_crlf (); else putc ('\n', rl_outstream);
   } 
   lines = 0;
@@ -1749,9 +1719,8 @@ rl_display_match_list (matches, len, max)
     if (EXTERNAL_PAGER)
     {
 			#undef rl_crlf
-			fclose(rl_outstream);
+			pclose(rl_outstream);
 			rl_outstream = old_rl_outstream;
-			waitpid(pid, 0, 0);
     }
 
 }
