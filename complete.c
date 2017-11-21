@@ -1626,7 +1626,7 @@ rl_display_match_list (matches, len, max)
   rl_crlf ();
 
   FILE *old_rl_outstream;
-	#define EXTERNAL_PAGER (_rl_page_completions == 2)
+	#define EXTERNAL_PAGER ((_rl_page_completions == 2) && (count >= _rl_screenheight - 1)) // Is this not equivalent to count > _rl_screenheight?
   if (EXTERNAL_PAGER)
   {
 		signal(SIGPIPE, SIG_IGN);
