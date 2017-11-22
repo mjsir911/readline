@@ -1627,15 +1627,15 @@ rl_display_match_list (matches, len, max)
 
   FILE *old_rl_outstream;
 	#define EXTERNAL_PAGER_ENABLED ((_rl_page_completions == 2) && (count >= _rl_screenheight - 1)) // Is this not equivalent to count > _rl_screenheight?
-  if (EXTERNAL_PAGER_ENABLED)
-  {
+	if (EXTERNAL_PAGER_ENABLED)
+	{
 		signal(SIGPIPE, SIG_IGN);
 		char *pager = getenv ("PAGER");
-    old_rl_outstream = rl_outstream;
-    rl_outstream = popen(pager, "w");
+		old_rl_outstream = rl_outstream;
+		rl_outstream = popen(pager, "w");
 
-		#define rl_crlf() if (!EXTERNAL_PAGER_ENABLED) rl_crlf (); else putc ('\n', rl_outstream);
-  } 
+	#define rl_crlf() if (!EXTERNAL_PAGER_ENABLED) rl_crlf (); else putc ('\n', rl_outstream);
+	}
   lines = 0;
   if (_rl_print_completions_horizontally == 0)
     {
