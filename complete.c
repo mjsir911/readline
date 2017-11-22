@@ -1631,8 +1631,6 @@ rl_display_match_list (matches, len, max)
   {
 		signal(SIGPIPE, SIG_IGN);
 		char *pager = getenv ("PAGER");
-		if (pager == NULL || (*pager == '\0'))
-			pager = "more";
     old_rl_outstream = rl_outstream;
     rl_outstream = popen(pager, "w");
 

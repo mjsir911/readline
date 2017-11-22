@@ -1864,7 +1864,26 @@ sv_pcompletions (value) /*_rl_page_completions*/
   if (value  == 0 || *value == '\0')
     _rl_page_completions = 1;
   else if (_rl_stricmp (value, "extended") == 0)
+	{
+		char *pager = getenv ("PAGER");
+		if (pager == NULL || (*pager == '\0'))
+		{
+				fprintf(stderr, "$PAGER variable not set, falling back to internal pager\n");
+				_rl_page_completions = 1; // fall back to internal-pager
+				return 0;
+		}
+		#define CHECK_EXISTS "command -v %s > /dev/null"
+		size_t buffer_size = strlen(CHECK_EXISTS) + strlen(pager); // It's one bigger than it has to be?
+		char cmd[buffer_size];
+		snprintf(cmd, buffer_size, CHECK_EXISTS, pager);
+		if (system(cmd) != 0)
+		{
+				fprintf(stderr, "Invalid $PAGER variable: %s\n", pager);
+				_rl_page_completions = 1; // fall back to internal-pager
+				return 0;
+		}
     _rl_page_completions = 2;
+	}
   else
     _rl_page_completions = bool_to_int(value);
   return 0;
