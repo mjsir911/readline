@@ -1668,7 +1668,7 @@ rl_display_match_list (matches, len, max)
 #else
 	  if (RL_SIG_RECEIVED ())
 #endif
-	    return;
+	    goto external_pager_deinit; // is a return
 	  lines++;
 	  if (_rl_page_completions == 1 && lines >= (_rl_screenheight - 1) && i < count)
 	    {
@@ -1691,7 +1691,7 @@ rl_display_match_list (matches, len, max)
 #else
 	  if (RL_SIG_RECEIVED ())
 #endif
-	    return;
+	    goto external_pager_deinit; // is a return
 	  if (matches[i+1])
 	    {
 	      if (limit == 1 || (i && (limit > 1) && (i % limit) == 0))
@@ -1714,6 +1714,8 @@ rl_display_match_list (matches, len, max)
 	}
       rl_crlf ();
     }
+
+external_pager_deinit:
     if (EXTERNAL_PAGER_ENABLED)
     {
 			#undef rl_crlf
