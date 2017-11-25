@@ -1865,7 +1865,7 @@ sv_pcompletions (value) /*_rl_page_completions*/
     _rl_page_completions = 1;
   else if (_rl_stricmp (value, "extended") == 0)
 	{
-		char *pager = getenv ("PAGER");
+		char *pager = sh_get_env_value ("PAGER");
 		if (pager == NULL || (*pager == '\0'))
 		{
 				fprintf(stderr, "$PAGER variable not set, falling back to internal pager\n");

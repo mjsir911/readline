@@ -64,6 +64,7 @@ extern int errno;
 /* Some standard library routines. */
 #include "readline.h"
 #include "xmalloc.h"
+#include "rlshell.h"
 #include "rlprivate.h"
 
 #if defined (COLOR_SUPPORT)
@@ -1631,7 +1632,7 @@ rl_display_match_list (matches, len, max)
 	if (EXTERNAL_PAGER_ENABLED)
 	{
 		old_SIGPIPE = signal(SIGPIPE, SIG_IGN);
-		char *pager = getenv ("PAGER");
+		char *pager = sh_get_env_value ("PAGER");
 		rl_outstream = popen(pager, "w");
 
 	#define rl_crlf() if (!EXTERNAL_PAGER_ENABLED) rl_crlf (); else putc ('\n', rl_outstream);
