@@ -1626,10 +1626,11 @@ rl_display_match_list (matches, len, max)
   rl_crlf ();
 
   FILE *old_rl_outstream = rl_outstream;
+	void *old_SIGPIPE;
 	#define EXTERNAL_PAGER_ENABLED ((_rl_page_completions == 2) && (count >= _rl_screenheight - 1)) // Is this not equivalent to count > _rl_screenheight?
 	if (EXTERNAL_PAGER_ENABLED)
 	{
-		signal(SIGPIPE, SIG_IGN);
+		old_SIGPIPE = signal(SIGPIPE, SIG_IGN);
 		char *pager = getenv ("PAGER");
 		rl_outstream = popen(pager, "w");
 
@@ -1720,6 +1721,7 @@ external_pager_deinit:
 		#undef rl_crlf
 		pclose(rl_outstream);
 		rl_outstream = old_rl_outstream;
+		signal(SIGPIPE, old_SIGPIPE);
 
 }
 
